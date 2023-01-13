@@ -207,43 +207,42 @@ def draw_tours(vrp, routing=None, solution=None):
         else:
             plt.scatter(x=vertex[0], y=vertex[1], c='black', zorder=2)
 
-    colormap = plt.cm.gist_ncar
-    colors = [colormap(i) for i in np.linspace(0.25, 0.75, vrp['trucks'])]
-
-    i = 0
-    for truck in range(manager.GetNumberOfVehicles()):
-        index = routing.Start(truck)
-
-        prev_stop = vrp['coords'][0]
-        while not routing.IsEnd(index):
-            stop = vrp['coords'][manager.IndexToNode(index)]
-            plt.plot([prev_stop[0], stop[0]], [prev_stop[1], stop[1]], c=colors[i], linewidth=3, zorder=1)
-            prev_stop = stop
-            index = solution.Value(routing.NextVar(index))
-        stop = vrp['coords'][0]
-        plt.plot([prev_stop[0], stop[0]], [prev_stop[1], stop[1]], c=colors[i], linewidth=3, zorder=1)
-        i += 1
-
     for i in range(1, vrp['stops']):
         stop = vrp['coords'][i]
         plt.text(stop[0] - 500, stop[1] + 200, vrp['time_windows'][i], fontsize='xx-small')
         plt.text(stop[0] - 250, stop[1] - 100, vrp['trash'][i], fontsize='xx-small')
 
 
-    for truck in range(manager.GetNumberOfVehicles()):
-        index = routing.Start(truck)
-        while not routing.IsEnd(index):
-            i = manager.IndexToNode(index)
-            if i != 0:
-                stop = vrp['coords'][i]
-                time = solution.Min(routing.GetDimensionOrDie('Time').CumulVar(index))
-                plt.text(stop[0] - 100, stop[1] - 400, time, fontsize='xx-small', color='green')
-            index = solution.Value(routing.NextVar(index))
+    if solution is not None and routing is not None:
 
+        colormap = plt.cm.gist_ncar
+        colors = [colormap(i) for i in np.linspace(0.25, 0.75, vrp['trucks'])]
 
+        i = 0
+        for truck in range(manager.GetNumberOfVehicles()):
+            index = routing.Start(truck)
+
+            prev_stop = vrp['coords'][0]
+            while not routing.IsEnd(index):
+                stop = vrp['coords'][manager.IndexToNode(index)]
+                plt.plot([prev_stop[0], stop[0]], [prev_stop[1], stop[1]], c=colors[i], linewidth=3, zorder=1)
+                prev_stop = stop
+                index = solution.Value(routing.NextVar(index))
+            stop = vrp['coords'][0]
+            plt.plot([prev_stop[0], stop[0]], [prev_stop[1], stop[1]], c=colors[i], linewidth=3, zorder=1)
+            i += 1
+
+        for truck in range(manager.GetNumberOfVehicles()):
+            index = routing.Start(truck)
+            while not routing.IsEnd(index):
+                i = manager.IndexToNode(index)
+                if i != 0:
+                    stop = vrp['coords'][i]
+                    time = solution.Min(routing.GetDimensionOrDie('Time').CumulVar(index))
+                    plt.text(stop[0] - 100, stop[1] - 400, time, fontsize='xx-small', color='green')
+                index = solution.Value(routing.NextVar(index))
 
     plt.show()
-
 
 
 if __name__ == '__main__':
@@ -273,4 +272,5 @@ if __name__ == '__main__':
         print_solution(manager, routing, solution)
         draw_tours(vrp, routing, solution)
     else:
+        draw_tours(vrp)
         print('No solution found!')
