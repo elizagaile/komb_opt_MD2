@@ -216,7 +216,7 @@ def draw_tours(vrp, routing=None, solution=None):
     if solution is not None and routing is not None:
 
         colormap = plt.cm.gist_ncar
-        colors = [colormap(i) for i in np.linspace(0.25, 0.75, vrp['trucks'])]
+        colors = [colormap(i) for i in np.linspace(0, 0.9, vrp['trucks'])]
 
         i = 0
         for truck in range(manager.GetNumberOfVehicles()):
